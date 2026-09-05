@@ -22,7 +22,7 @@ const CLAMP_GEOM: Record<NominalSizeId, ClampSpec> = {
   '3': { sizeId: '3', insideDiameter: 5.250, boltCentres: 4.250, boltDiameter: 0.375, clampWidth: 1.500 },
   '4': { sizeId: '4', insideDiameter: 6.500, boltCentres: 5.500, boltDiameter: 0.437, clampWidth: 1.625 },
   '6': { sizeId: '6', insideDiameter: 8.750, boltCentres: 7.500, boltDiameter: 0.500, clampWidth: 1.750 },
-];
+};
 
 export function getClampSpec(sizeId: NominalSizeId): ClampSpec | undefined {
   return CLAMP_GEOM[sizeId];

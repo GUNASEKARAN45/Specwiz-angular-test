@@ -1,12 +1,13 @@
 import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { InsMMPipe } from '../../../../shared/pipes/ins-mm.pipe';
-import { FieldRowComponent } from '../../../../shared/components/field-row/field-row.component';
-import { ReadonlyFieldComponent } from '../../../../shared/components/readonly-field/readonly-field.component';
-import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
-import { HubSpec, Duty } from '../../../../core/models/hub.model';
-import { HubDetailEditable } from '../../design-data.models';
+import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
+import { InsMMPipe } from '../../../../../shared/pipes/ins-mm.pipe';
+import { FieldRowComponent } from '../../../../../shared/components/field-row/field-row.component';
+import { ReadonlyFieldComponent } from '../../../../../shared/components/readonly-field/readonly-field.component';
+import { ActionButtonComponent } from '../../../../../shared/components/action-button/action-button.component';
+import { HubSpec, Duty } from '../../../../../core/models/hub.model';
+import { NominalSizeId } from '../../../../../core/models/pipe.model';
+import { HubDetailEditable } from '../../../design-data.models';
 
 @Component({
   selector: 'sw-hub-detail-panel',
@@ -111,19 +112,21 @@ export class HubDetailPanelComponent implements OnInit {
   @Input() initialData: HubDetailEditable | null = null;
   @Output() reset = new EventEmitter<void>();
 
-  fg: FormGroup;
-
-  constructor(private fb: FormBuilder) {
-    this.fg = this.fb.group({
-      size: [null],
-      lengthD: [null, [Validators.min(0)]],
-      hubTaperAngle: [null, [Validators.min(0)]],
-      frictionAngle: [null, [Validators.min(0)]],
-      duty: ['standard'],
-      backfaceDepthE: [null, [Validators.min(0)]],
-      blindLength: [null, [Validators.min(0)]],
-    });
-  }
+  /**
+   * Declared with explicit controls rather than FormBuilder.group(), so
+   * `controls` is a typed record instead of an index signature of
+   * AbstractControl. The template binds `[formControl]="fg.controls.lengthD"`
+   * directly, and [formControl] accepts only a FormControl.
+   */
+  readonly fg = new FormGroup({
+    size: new FormControl<NominalSizeId | null>(null),
+    lengthD: new FormControl<number | null>(null, [Validators.min(0)]),
+    hubTaperAngle: new FormControl<number | null>(null, [Validators.min(0)]),
+    frictionAngle: new FormControl<number | null>(null, [Validators.min(0)]),
+    duty: new FormControl<string | null>('standard'),
+    backfaceDepthE: new FormControl<number | null>(null, [Validators.min(0)]),
+    blindLength: new FormControl<number | null>(null, [Validators.min(0)]),
+  });
 
   ngOnInit(): void {
     if (this.initialData) {
