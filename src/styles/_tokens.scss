@@ -1,0 +1,67 @@
+/**
+ * Design tokens — all colours, spacing, radius, typography.
+ * SPEC.md §4, AC-UI-01
+ * No component hard-codes a colour.
+ */
+
+/* ---- Colour palette ---- */
+:root {
+  /* Primary blue (for action buttons) */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-dark: #1d4ed8;
+
+  /* Text */
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #5a6786;
+  --color-text-tertiary: #8a94a6;
+
+  /* Status */
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+  --color-warning: #d97706;
+
+  /* Glass surfaces */
+  --glass-light-bg: rgba(255, 255, 255, 0.55);
+  --glass-light-border: rgba(255, 255, 255, 0.35);
+  --glass-dark-bg: rgba(22, 26, 34, 0.55);
+  --glass-dark-border: rgba(255, 255, 255, 0.2);
+
+  /* Fallback (no backdrop-filter) */
+  --glass-fallback-light-bg: rgba(255, 255, 255, 0.85);
+  --glass-fallback-border: rgba(136, 150, 171, 0.3);
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Breakpoints */
+  --breakpoint-mobile: 360px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-wide: 1280px;
+  --breakpoint-xxl: 1440px;
+  --breakpoint-xxxl: 1920px;
+}

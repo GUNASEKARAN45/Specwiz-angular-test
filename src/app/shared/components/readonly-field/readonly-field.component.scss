@@ -1,0 +1,19 @@
+.readonly-field {
+  background: rgba(234, 236, 240, 0.7);
+  border: 1px solid rgba(136, 150, 171, 0.2);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #1a1a2e);
+  box-sizing: border-box;
+  user-select: all;
+
+  /* No blur — outputs are flat and quiet */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

@@ -1,0 +1,66 @@
+<div class="design-data-page">
+  <!-- Tab bar with four tabs, Design Data active -->
+  <nav class="tab-bar" role="tablist">
+    <a class="tab" [class.active]="currentTab === 'piping-class-data'" (click)="currentTab = 'piping-class-data'">Piping Class Data</a>
+    <a class="tab active" [class.active]="currentTab === 'design-data'" (click)="currentTab = 'design-data'">Design Data</a>
+    <a class="tab" [class.active]="currentTab === 'output-data'" (click)="currentTab = 'output-data'">Output Data</a>
+    <a class="tab" [class.active]="currentTab === 'stress-report'" (click)="currentTab = 'stress-report'">Stress Report</a>
+  </nav>
+
+  <!-- Tab content -->
+  <div class="tab-content">
+    @if (currentTab === 'design-data') {
+      <sw-glass-card class="page-glass">
+        <sw-pipe-od-section
+          [store]="store"
+          [pipeSizes]="pipeSizes()"
+          [schedules]="schedulesForSelectedSize()"
+          (specBreaksRequested)="onSpecBreaks()"
+        />
+
+        <sw-sealring-section
+          [store]="store"
+          [types]="sealringTypes()"
+          [sizesForType]="sealringSizes()"
+          (optionsRequested)="onSealringOptions()"
+        />
+
+        <sw-clamp-section
+          [store]="store"
+          [clampSizes]="clampSizes()"
+          (clampSizeChange)="onClampSizeChange($event)"
+        />
+
+        <sw-hub-section
+          [store]="store"
+          [hubSizes]="hubSizes()"
+          [duties]="duties()"
+          (optionsRequested)="onHubOptions()"
+        />
+      </sw-glass-card>
+    }
+    @if (currentTab === 'piping-class-data') {
+      <sw-glass-card class="placeholder-card">
+        <h2>Piping Class Data</h2>
+        <p>Coming soon.</p>
+      </sw-glass-card>
+    }
+    @if (currentTab === 'output-data') {
+      <sw-glass-card class="placeholder-card">
+        <h2>Output Data</h2>
+        <p>Coming soon.</p>
+      </sw-glass-card>
+    }
+    @if (currentTab === 'stress-report') {
+      <sw-glass-card class="placeholder-card">
+        <h2>Stress Report</h2>
+        <p>Coming soon.</p>
+      </sw-glass-card>
+    }
+  </div>
+
+  <!-- Validation chip - bottom right -->
+  <div class="status-wrapper">
+    <sw-status-chip [errorCount]="store.errorCount()" />
+  </div>
+</div>

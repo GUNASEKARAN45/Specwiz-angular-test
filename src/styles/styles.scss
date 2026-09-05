@@ -1,0 +1,49 @@
+/**
+ * Global styles — Specwiz Design Data tab.
+ * SPEC.md §4, AC-UI-01
+ */
+
+@use 'sass:math';
+@use './_tokens';
+@use './_glass' as glass;
+
+/* Reset and base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  @include glass.gradient-wash();
+  overflow-x: hidden;
+}
+
+@media (max-width: 360px) {
+  body {
+    overflow-x: hidden;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+button, input, select {
+  min-height: 44px;
+}

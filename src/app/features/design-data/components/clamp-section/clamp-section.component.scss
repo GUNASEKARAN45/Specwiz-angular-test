@@ -1,0 +1,46 @@
+.clamp-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  .control-column, .outputs-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.form-select {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid rgba(136, 150, 171, 0.3);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(4px);
+  min-height: 36px;
+}
+
+.form-select:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  min-height: 44px;
+
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 767px) {
+  .clamp-controls {
+    grid-template-columns: 1fr;
+  }
+}
