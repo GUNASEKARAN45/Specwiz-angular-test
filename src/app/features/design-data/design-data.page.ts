@@ -8,7 +8,6 @@ import { SealringSectionComponent } from './components/sealring-section/sealring
 import { ClampSectionComponent } from './components/clamp-section/clamp-section.component';
 import { HubSectionComponent } from './components/hub-section/hub-section.component';
 import { StatusChipComponent } from '../../shared/components/status-chip/status-chip.component';
-import { GlassCardComponent } from '../../shared/components/glass-card/glass-card.component';
 import { NominalSizeId } from '../../core/models/pipe.model';
 import { PipeSize, Schedule } from '../../core/models/pipe.model';
 import { SealringType, SealringSize } from '../../core/models/sealring.model';
@@ -26,7 +25,6 @@ import { HubSize, Duty } from '../../core/models/hub.model';
     ClampSectionComponent,
     HubSectionComponent,
     StatusChipComponent,
-    GlassCardComponent,
   ],
   templateUrl: './design-data.page.html',
   styleUrls: ['./design-data.page.scss'],

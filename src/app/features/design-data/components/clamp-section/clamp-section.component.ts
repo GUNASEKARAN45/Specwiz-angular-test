@@ -1,64 +1,71 @@
+/**
+ * Clamp section. Layout from ref-03: the size select with the Bolt Tensioned
+ * checkbox beneath on the left, and four read-only values in two pairs on the
+ * right.
+ *
+ * The size chosen here drives the hub (G-DD-06). That linkage is emitted
+ * upward and resolved in the store — this component does not know the hub
+ * section exists, which is what AC-ARCH-02 asks of it.
+ */
 import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { InsMMPipe } from '../../../../shared/pipes/ins-mm.pipe';
-import { FieldRowComponent } from '../../../../shared/components/field-row/field-row.component';
-import { ReadonlyFieldComponent } from '../../../../shared/components/readonly-field/readonly-field.component';
-import { FormSectionComponent } from '../../../../shared/components/form-section/form-section.component';
 import { ClampSize } from '../../../../core/models/clamp.model';
 import { NominalSizeId } from '../../../../core/models/pipe.model';
+import { formatInches } from '../../../../core/util/units.util';
 import { DesignDataStore } from '../../store/design-data.store';
 
 @Component({
   selector: 'sw-clamp-section',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    FormsModule,
-    InsMMPipe,
-    FieldRowComponent,
-    ReadonlyFieldComponent,
-    FormSectionComponent,
-  ],
+  imports: [CommonModule],
   template: `
-    <sw-form-section title="Clamp">
-      <div class="clamp-controls">
-        <div class="control-column">
-          <sw-field-row id="clamp-size" label="Clamp">
-            <select
-              class="form-select"
-              [value]="store.clampSizeId() ?? ''"
-              (change)="onClampSize($event)"
-            >
-              <option value="">Select...</option>
-              @for (c of clampSizes; track c.id) {
-                <option [ngValue]="c.id">{{ c.label }}</option>
-              }
-            </select>
-          </sw-field-row>
+    <h2 class="dd-section-title">Clamp</h2>
 
-          <sw-field-row id="bolt-tensioned" label="Bolt Tensioned">
-            <label class="checkbox-label">
-              <input
-                type="checkbox"
-                class="checkbox"
-                [checked]="store.boltTensioned()"
-                (change)="onBoltTensioned($event)"
-              />
-              <span></span>
-            </label>
-          </sw-field-row>
+    <div class="clamp-bands">
+      <div class="controls">
+        <select
+          class="dd-select"
+          aria-label="Clamp size"
+          [value]="store.clampSizeId() ?? ''"
+          (change)="onClampSize($event)"
+        >
+          <option value=""></option>
+          @for (size of clampSizes; track size.id) {
+            <option [value]="size.id">{{ size.label }}</option>
+          }
+        </select>
+
+        <label class="dd-check">
+          <input
+            type="checkbox"
+            [checked]="store.boltTensioned()"
+            (change)="onBoltTensioned($event)"
+          />
+          <span>Bolt Tensioned</span>
+        </label>
+      </div>
+
+      <div class="dd-pair dd-pair--duo outputs">
+        <span class="dd-label" id="clamp-id-label">Inside Diameter</span>
+        <div class="dd-ro" role="status" aria-labelledby="clamp-id-label">
+          {{ ins(spec()?.insideDiameter) }}
+        </div>
+        <span class="dd-label" id="clamp-bc-label">Bolt Centres</span>
+        <div class="dd-ro" role="status" aria-labelledby="clamp-bc-label">
+          {{ ins(spec()?.boltCentres) }}
         </div>
 
-        <div class="outputs-column">
-          <sw-readonly-field label="Inside Diameter" [value]="(spec()?.insideDiameter | insMm) ?? '0.000 ins'" />
-          <sw-readonly-field label="Bolt Centres" [value]="(spec()?.boltCentres | insMm) ?? '0.000 ins'" />
-          <sw-readonly-field label="Bolt Diameter" [value]="(spec()?.boltDiameter | insMm) ?? '0.000 ins'" />
-          <sw-readonly-field label="Clamp Width" [value]="(spec()?.clampWidth | insMm) ?? '0.000 ins'" />
+        <span class="dd-label" id="clamp-bd-label">Bolt Diameter</span>
+        <div class="dd-ro" role="status" aria-labelledby="clamp-bd-label">
+          {{ ins(spec()?.boltDiameter) }}
+        </div>
+        <span class="dd-label" id="clamp-cw-label">Clamp Width</span>
+        <div class="dd-ro" role="status" aria-labelledby="clamp-cw-label">
+          {{ ins(spec()?.clampWidth) }}
         </div>
       </div>
-    </sw-form-section>
+    </div>
   `,
   styleUrls: ['./clamp-section.component.scss'],
 })
@@ -66,6 +73,8 @@ export class ClampSectionComponent {
   @Input({ required: true }) store!: DesignDataStore;
   @Input() clampSizes: ClampSize[] = [];
   @Output() clampSizeChange = new EventEmitter<NominalSizeId | null>();
+
+  readonly ins = formatInches;
 
   // A getter, not a field: @Input values are assigned AFTER construction,
   // so a field initializer reading `this.store` gets undefined and the

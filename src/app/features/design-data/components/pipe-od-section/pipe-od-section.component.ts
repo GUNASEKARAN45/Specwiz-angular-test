@@ -1,197 +1,171 @@
+/**
+ * Pipe / OD section — the top block of the Design Data tab.
+ *
+ * Layout follows ref-01 and ref-03: pipe basis on the left, dimension basis in
+ * the middle, resolved geometry read-only on the right, and the Spec breaks
+ * button beneath. Every control stays on screen at all times; an interlock
+ * greys it rather than removing it (G-DD-04), which is both what the reference
+ * shows and what keeps the layout from jumping as radios change.
+ */
 import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { InsMMPipe } from '../../../../shared/pipes/ins-mm.pipe';
-import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
-import { FieldRowComponent } from '../../../../shared/components/field-row/field-row.component';
-import { ReadonlyFieldComponent } from '../../../../shared/components/readonly-field/readonly-field.component';
-import { DualUnitFieldComponent } from '../../../../shared/components/dual-unit-field/dual-unit-field.component';
-import { FormSectionComponent } from '../../../../shared/components/form-section/form-section.component';
-import { PipeGeometry, PipeSize, Schedule, NominalSizeId } from '../../../../core/models/pipe.model';
+import { PipeSize, Schedule, NominalSizeId } from '../../../../core/models/pipe.model';
+import { formatInches, formatDualUnit } from '../../../../core/util/units.util';
 import { DesignDataStore, PipeBasis, DimensionBasis } from '../../store/design-data.store';
 
 @Component({
   selector: 'sw-pipe-od-section',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    FormsModule,
-    InsMMPipe,
-    ActionButtonComponent,
-    FieldRowComponent,
-    ReadonlyFieldComponent,
-    DualUnitFieldComponent,
-    FormSectionComponent,
-  ],
+  imports: [CommonModule],
   template: `
-    <sw-form-section title="Pipe / OD">
-      <div class="pipe-controls">
-        <!-- Group A: Pipe Basis -->
-        <div class="basis-group">
-          <fieldset class="radio-fieldset">
-            <legend class="radio-legend">Pipe Basis</legend>
-            <div class="radio-options" role="radiogroup" aria-label="Pipe Basis">
-              <label class="radio-option">
-                <input
-                  type="radio"
-                  name="pipeBasis"
-                  value="pipe"
-                  [checked]="store.pipeBasis() === 'pipe'"
-                  (change)="onPipeBasis('pipe')"
-                />
-                <span>Pipe</span>
-              </label>
-              <label class="radio-option">
-                <input
-                  type="radio"
-                  name="pipeBasis"
-                  value="od"
-                  [checked]="store.pipeBasis() === 'od'"
-                  (change)="onPipeBasis('od')"
-                />
-                <span>OD</span>
-              </label>
-            </div>
-          </fieldset>
+    <div class="dd-bands">
+      <fieldset class="dd-fieldset">
+        <legend class="dd-sr-only">Pipe basis</legend>
+        <div class="dd-pair">
+          <label class="dd-radio">
+            <input
+              type="radio"
+              name="pipeBasis"
+              value="pipe"
+              [checked]="store.pipeBasis() === 'pipe'"
+              (change)="onPipeBasis('pipe')"
+            />
+            <span>Pipe</span>
+          </label>
+          <select
+            class="dd-select"
+            aria-label="Nominal pipe size"
+            [disabled]="!store.pipeSizeSelectEnabled()"
+            [value]="store.pipeSizeId() ?? ''"
+            (change)="onPipeSize($event)"
+          >
+            <option value=""></option>
+            @for (size of pipeSizes; track size.id) {
+              <option [value]="size.id">{{ size.label }}</option>
+            }
+          </select>
+
+          <label class="dd-radio">
+            <input
+              type="radio"
+              name="pipeBasis"
+              value="od"
+              [checked]="store.pipeBasis() === 'od'"
+              (change)="onPipeBasis('od')"
+            />
+            <span>OD</span>
+          </label>
+          <input
+            class="dd-input"
+            type="number"
+            step="0.001"
+            placeholder="0.000"
+            aria-label="Outside diameter in inches"
+            [disabled]="!store.odInputEnabled()"
+            [value]="store.odValue() ?? ''"
+            (input)="onOdValue($event)"
+          />
+        </div>
+      </fieldset>
+
+      <fieldset class="dd-fieldset">
+        <legend class="dd-sr-only">Dimension basis</legend>
+        <div class="dd-pair">
+          <label class="dd-radio">
+            <input
+              type="radio"
+              name="dimensionBasis"
+              value="schedule"
+              [checked]="store.dimensionBasis() === 'schedule'"
+              [disabled]="!store.scheduleEnabled()"
+              (change)="onDimensionBasis('schedule')"
+            />
+            <span>Schedule</span>
+          </label>
+          <select
+            class="dd-select"
+            aria-label="Schedule"
+            [disabled]="store.dimensionBasis() !== 'schedule' || !store.scheduleEnabled()"
+            [value]="store.scheduleId() ?? ''"
+            (change)="onSchedule($event)"
+          >
+            <option value=""></option>
+            @for (schedule of schedules; track schedule.id) {
+              <option [value]="schedule.id">{{ schedule.label }}</option>
+            }
+          </select>
+
+          <label class="dd-radio">
+            <input
+              type="radio"
+              name="dimensionBasis"
+              value="wall_thickness"
+              [checked]="store.dimensionBasis() === 'wall_thickness'"
+              (change)="onDimensionBasis('wall_thickness')"
+            />
+            <span>Wall Thickness</span>
+          </label>
+          <input
+            class="dd-input"
+            type="number"
+            step="0.001"
+            placeholder="0.000"
+            aria-label="Wall thickness in inches"
+            [disabled]="store.dimensionBasis() !== 'wall_thickness'"
+            [value]="store.wallThickness() ?? ''"
+            (input)="onWallThickness($event)"
+          />
+
+          <label class="dd-radio">
+            <input
+              type="radio"
+              name="dimensionBasis"
+              value="bore"
+              [checked]="store.dimensionBasis() === 'bore'"
+              (change)="onDimensionBasis('bore')"
+            />
+            <span>Bore</span>
+          </label>
+          <input
+            class="dd-input"
+            type="number"
+            step="0.001"
+            placeholder="0.000"
+            aria-label="Bore in inches"
+            [disabled]="store.dimensionBasis() !== 'bore'"
+            [value]="store.bore() ?? ''"
+            (input)="onBore($event)"
+          />
+        </div>
+      </fieldset>
+
+      <div class="dd-pair">
+        <span class="dd-label" id="pipe-od-label">Outer Diameter</span>
+        <div class="dd-ro" role="status" aria-labelledby="pipe-od-label">
+          {{ ins(resolvedGeom()?.od) }}
         </div>
 
-        <!-- Group B: Dimension Basis -->
-        <div class="basis-group">
-          <fieldset class="radio-fieldset">
-            <legend class="radio-legend">Dimension Basis</legend>
-            <div class="radio-options" role="radiogroup" aria-label="Dimension Basis">
-              <label class="radio-option" [class.disabled-option]="!store.scheduleEnabled()">
-                <input
-                  type="radio"
-                  name="dimensionBasis"
-                  value="schedule"
-                  [checked]="store.dimensionBasis() === 'schedule'"
-                  [disabled]="!store.scheduleEnabled()"
-                  (change)="onDimensionBasis('schedule')"
-                />
-                <span>Schedule</span>
-              </label>
-              <label class="radio-option">
-                <input
-                  type="radio"
-                  name="dimensionBasis"
-                  value="wall_thickness"
-                  [checked]="store.dimensionBasis() === 'wall_thickness'"
-                  (change)="onDimensionBasis('wall_thickness')"
-                />
-                <span>Wall Thickness</span>
-              </label>
-              <label class="radio-option">
-                <input
-                  type="radio"
-                  name="dimensionBasis"
-                  value="bore"
-                  [checked]="store.dimensionBasis() === 'bore'"
-                  (change)="onDimensionBasis('bore')"
-                />
-                <span>Bore</span>
-              </label>
-            </div>
-          </fieldset>
+        <span class="dd-label" id="pipe-wall-label">Wall thickness</span>
+        <div class="dd-ro" role="status" aria-labelledby="pipe-wall-label">
+          {{ dual(resolvedGeom()?.wallThickness) }}
         </div>
 
-        <!-- Controls column -->
-        <div class="control-column">
-          <div class="control-row">
-            @if (store.pipeSizeSelectEnabled()) {
-              <sw-field-row id="pipe-size" label="Pipe Size" unit="in">
-                <select
-                  class="form-select"
-                  [value]="store.pipeSizeId() ?? ''"
-                  [disabled]="!store.pipeSizeSelectEnabled()"
-                  (change)="onPipeSize($event)"
-                >
-                  <option value="">Select...</option>
-                  @for (size of pipeSizes; track size.id) {
-                    <option [ngValue]="size.id">{{ size.label }}</option>
-                  }
-                </select>
-              </sw-field-row>
-            }
-
-            @if (store.odInputEnabled()) {
-              <sw-field-row id="od-value" label="Outside Diameter" unit="in">
-                <input
-                  type="number"
-                  class="form-input"
-                  step="0.001"
-                  min="0"
-                  [value]="store.odValue() ?? ''"
-                  (input)="onOdValue($event)"
-                  placeholder="0.000"
-                />
-              </sw-field-row>
-            }
-          </div>
-
-          <div class="control-row">
-            @if (store.dimensionBasis() === 'schedule' && store.scheduleEnabled()) {
-              <sw-field-row id="schedule" label="Schedule">
-                <select
-                  class="form-select"
-                  [value]="store.scheduleId() ?? ''"
-                  (change)="onSchedule($event)"
-                >
-                  <option value="">Select...</option>
-                  @for (s of schedules; track s.id) {
-                    <option [ngValue]="s.id">{{ s.label }}</option>
-                  }
-                </select>
-              </sw-field-row>
-            }
-
-            @if (store.dimensionBasis() === 'wall_thickness') {
-              <sw-field-row id="wall-thickness" label="Wall Thickness" unit="in">
-                <input
-                  type="number"
-                  class="form-input"
-                  step="0.001"
-                  min="0"
-                  [value]="store.wallThickness() ?? ''"
-                  placeholder="0.000"
-                  (input)="onWallThickness($event)"
-                />
-              </sw-field-row>
-            }
-
-            @if (store.dimensionBasis() === 'bore') {
-              <sw-field-row id="bore" label="Bore" unit="in">
-                <input
-                  type="number"
-                  class="form-input"
-                  step="0.001"
-                  min="0"
-                  [value]="store.bore() ?? ''"
-                  placeholder="0.000"
-                  (input)="onBore($event)"
-                />
-              </sw-field-row>
-            }
-          </div>
-        </div>
-
-        <!-- Read-only outputs -->
-        <div class="outputs-column">
-          <sw-readonly-field label="Outer Diameter" [value]="(resolvedGeom()?.od | insMm) ?? '0.000 ins'" />
-          <sw-dual-unit-field label="Wall Thickness" [inches]="resolvedGeom()?.wallThickness ?? null" />
-          <sw-dual-unit-field label="Bore" [inches]="resolvedGeom()?.bore ?? null" />
+        <span class="dd-label" id="pipe-bore-label">Bore</span>
+        <div class="dd-ro" role="status" aria-labelledby="pipe-bore-label">
+          {{ dual(resolvedGeom()?.bore) }}
         </div>
       </div>
+    </div>
 
-      <div class="section-actions">
-        <sw-action-button
-          label="Spec breaks"
-          [disabled]="!store.pipeSectionComplete()"
-          (clicked)="onSpecBreaks()"
-        />
-      </div>
-    </sw-form-section>
+    <div class="dd-actions">
+      <button
+        type="button"
+        class="dd-btn"
+        [disabled]="!store.pipeSectionComplete()"
+        (click)="onSpecBreaks()"
+      >Spec breaks</button>
+    </div>
   `,
   styleUrls: ['./pipe-od-section.component.scss'],
 })
@@ -200,6 +174,10 @@ export class PipeOdSectionComponent {
   @Input() pipeSizes: PipeSize[] = [];
   @Input() schedules: Schedule[] = [];
   @Output() specBreaksRequested = new EventEmitter<void>();
+
+  /** Formatters bound for the template; both answer a placeholder for null. */
+  readonly ins = formatInches;
+  readonly dual = formatDualUnit;
 
   // A getter, not a field: @Input values are assigned AFTER construction,
   // so a field initializer reading `this.store` gets undefined and the

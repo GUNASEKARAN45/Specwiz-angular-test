@@ -7,17 +7,17 @@
 /* ---- Colour palette ---- */
 :root {
   /* Primary blue (for action buttons) */
-  --color-primary: #3b82f6;
+  --color-primary: #2f7cf6;
   --color-primary-hover: #2563eb;
   --color-primary-dark: #1d4ed8;
 
   /* Text */
-  --color-text-primary: #1a1a2e;
-  --color-text-secondary: #5a6786;
+  --color-text-primary: #1f2430;
+  --color-text-secondary: #4a5265;
   --color-text-tertiary: #8a94a6;
 
   /* Status */
-  --color-success: #16a34a;
+  --color-success: #17a34a;
   --color-error: #dc2626;
   --color-warning: #d97706;
 
@@ -64,4 +64,33 @@
   --breakpoint-wide: 1280px;
   --breakpoint-xxl: 1440px;
   --breakpoint-xxxl: 1920px;
+
+  /* ---- Design Data screen ---- */
+  /* Read off ref-01..ref-05: a light sheet, blue accents, grey flat fields. */
+  --dd-page: #f4f6fa;
+  --dd-wash-a: #e8eefc;
+  --dd-wash-b: #eef0fb;
+  --dd-wash-c: #e6f0f7;
+
+  --dd-sheet: rgba(255, 255, 255, 0.72);
+  --dd-sheet-edge: rgba(255, 255, 255, 0.85);
+  --dd-sheet-shadow: 0 10px 34px rgba(28, 46, 92, 0.10);
+
+  --dd-ink: #1f2430;
+  --dd-ink-soft: #4a5265;
+  --dd-ink-faint: #98a0b3;
+
+  --dd-brand: #1b31c4;
+  --dd-brand-tab: #1a73e8;
+  --dd-btn-a: #2f7cf6;
+  --dd-btn-b: #1667e0;
+
+  --dd-field: #ffffff;
+  --dd-field-edge: #c9d0de;
+  --dd-field-flat: #eef0f4;
+  --dd-rule: #b9c0ce;
+
+  --dd-radius: 8px;
+  --dd-radius-pill: 999px;
+  --dd-row: 46px;
 }

@@ -1,14 +1,15 @@
+/**
+ * Hub section. Layout from ref-03: the hub select with the Edit and Options
+ * buttons beside it, the recessed checkbox beneath, and four read-only values
+ * in two pairs on the right. Edit expands the detail panel inline, below this
+ * row and inside this section (ref-05), and becomes Close while it is open.
+ */
 import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { InsMMPipe } from '../../../../shared/pipes/ins-mm.pipe';
-import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
-import { FieldRowComponent } from '../../../../shared/components/field-row/field-row.component';
-import { ReadonlyFieldComponent } from '../../../../shared/components/readonly-field/readonly-field.component';
-import { FormSectionComponent } from '../../../../shared/components/form-section/form-section.component';
 import { HubDetailPanelComponent } from './hub-detail-panel/hub-detail-panel.component';
-import { HubSize, HubSpec, Duty } from '../../../../core/models/hub.model';
+import { HubSize, Duty } from '../../../../core/models/hub.model';
 import { NominalSizeId } from '../../../../core/models/pipe.model';
+import { formatInches } from '../../../../core/util/units.util';
 import { DesignDataStore } from '../../store/design-data.store';
 import { HubDetailEditable } from '../../design-data.models';
 
@@ -16,75 +17,80 @@ import { HubDetailEditable } from '../../design-data.models';
   selector: 'sw-hub-section',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    FormsModule,
-    InsMMPipe,
-    ActionButtonComponent,
-    FieldRowComponent,
-    ReadonlyFieldComponent,
-    FormSectionComponent,
-    HubDetailPanelComponent,
-  ],
+  imports: [CommonModule, HubDetailPanelComponent],
   template: `
-    <sw-form-section title="Hub">
-      <div class="hub-controls">
-        <div class="control-column">
-          <sw-field-row id="hub-size" label="Hub">
-            <select
-              class="form-select"
-              [value]="store.hubSizeId() ?? ''"
-              (change)="onHubSize($event)"
-            >
-              <option value="">Select...</option>
-              @for (h of hubSizes; track h.id) {
-                <option [ngValue]="h.id">{{ h.label }}</option>
-              }
-            </select>
-          </sw-field-row>
+    <h2 class="dd-section-title">Hub</h2>
 
-          @if (store.hubSizeId() !== null) {
-            <div class="hub-note" *ngIf="store.clampDrivenHubNote()">
-              Auto-selected by clamp size
-            </div>
-          }
+    <div class="hub-bands">
+      <div class="controls">
+        <div class="hub-row">
+          <select
+            class="dd-select"
+            aria-label="Hub size"
+            [value]="store.hubSizeId() ?? ''"
+            (change)="onHubSize($event)"
+          >
+            <option value=""></option>
+            @for (size of hubSizes; track size.id) {
+              <option [value]="size.id">{{ size.label }}</option>
+            }
+          </select>
 
-          <sw-field-row id="recessed" label="Recessed">
-            <label class="checkbox-label">
-              <input
-                type="checkbox"
-                class="checkbox"
-                [checked]="store.hubRecessed()"
-                (change)="onRecessed($event)"
-              />
-              <span></span>
-            </label>
-          </sw-field-row>
+          <!-- G-DD-07: one control, two labels. Never both on screen. -->
+          <button
+            type="button"
+            class="dd-btn"
+            [attr.aria-expanded]="store.hubDetailExpanded()"
+            aria-controls="hub-detail-panel"
+            [disabled]="!store.hubSizeId()"
+            (click)="onToggleDetail()"
+          >{{ store.hubDetailExpanded() ? 'Close' : 'Edit' }}</button>
+
+          <button
+            type="button"
+            class="dd-btn"
+            [disabled]="!store.hubSectionComplete()"
+            (click)="onOptions()"
+          >Options</button>
         </div>
 
-        <div class="outputs-column">
-          <sw-readonly-field label="Outside Diameter" [value]="(spec()?.outsideDiameter | insMm) ?? '0.000 ins'" />
-          <sw-readonly-field label="Backface Diameter" [value]="(spec()?.backfaceDiameter | insMm) ?? '0.000 ins'" />
-          <sw-readonly-field label="Shoulder Thickness" [value]="(spec()?.shoulderThickness | insMm) ?? '0.000 ins'" />
-          <sw-readonly-field label="Maximum bore" [value]="(spec()?.maxBore | insMm) ?? '0.000 ins'" />
+        <label class="dd-check">
+          <input
+            type="checkbox"
+            [checked]="store.hubRecessed()"
+            (change)="onRecessed($event)"
+          />
+          <span>recessed</span>
+        </label>
+
+        @if (store.clampDrivenHubNote()) {
+          <p class="hub-note">{{ store.clampDrivenHubNote() }}</p>
+        }
+      </div>
+
+      <div class="dd-pair dd-pair--duo outputs">
+        <span class="dd-label" id="hub-od-label">Outside Diameter</span>
+        <div class="dd-ro" role="status" aria-labelledby="hub-od-label">
+          {{ ins(spec()?.outsideDiameter) }}
+        </div>
+        <span class="dd-label" id="hub-bf-label">Backface Diameter</span>
+        <div class="dd-ro" role="status" aria-labelledby="hub-bf-label">
+          {{ ins(spec()?.backfaceDiameter) }}
+        </div>
+
+        <span class="dd-label" id="hub-st-label">Shoulder Thickness</span>
+        <div class="dd-ro" role="status" aria-labelledby="hub-st-label">
+          {{ ins(spec()?.shoulderThickness) }}
+        </div>
+        <span class="dd-label" id="hub-mb-label">Maximum bore</span>
+        <div class="dd-ro" role="status" aria-labelledby="hub-mb-label">
+          {{ ins(spec()?.maxBore) }}
         </div>
       </div>
+    </div>
 
-      <div class="hub-actions">
-        <sw-action-button
-          label="Edit"
-          [disabled]="!store.hubSectionComplete()"
-          (clicked)="onToggleDetail()"
-        />
-        <sw-action-button
-          label="Options"
-          [disabled]="!store.hubSectionComplete()"
-          (clicked)="onOptions()"
-        />
-      </div>
-
-      <!-- Inline detail panel — toggles with Edit/Close -->
-      @if (store.hubDetailExpanded()) {
+    @if (store.hubDetailExpanded()) {
+      <div id="hub-detail-panel">
         <sw-hub-detail-panel
           [hubSpec]="store.hubSpec()"
           [hubSizes]="hubSizesMapped()"
@@ -92,8 +98,8 @@ import { HubDetailEditable } from '../../design-data.models';
           [initialData]="hubDetailInitial()"
           (reset)="onResetDetail()"
         />
-      }
-    </sw-form-section>
+      </div>
+    }
   `,
   styleUrls: ['./hub-section.component.scss'],
 })
@@ -102,6 +108,8 @@ export class HubSectionComponent {
   @Input() hubSizes: HubSize[] = [];
   @Input() duties: Duty[] = [];
   @Output() optionsRequested = new EventEmitter<void>();
+
+  readonly ins = formatInches;
 
   hubSizesMapped = computed(() => this.hubSizes.map(h => ({ id: h.id, label: h.label })));
   hubDetailInitial = computed<HubDetailEditable | null>(() => {

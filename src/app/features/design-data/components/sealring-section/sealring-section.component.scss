@@ -1,44 +1,31 @@
-.sealring-controls {
+:host { display: block; }
+
+.sealring-bands {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-
-  .control-column, .outputs-column {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+  gap: 10px 34px;
+  align-items: start;
 }
 
-.section-actions {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: flex-start;
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px 14px;
+  align-items: center;
 }
 
-.form-select {
-  padding: 0.4rem 0.5rem;
-  border: 1px solid rgba(136, 150, 171, 0.3);
-  border-radius: 6px;
-  font-size: 0.875rem;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(4px);
-  min-height: 36px;
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    background: rgba(234, 236, 240, 0.7);
-  }
+/* The Options button sits under the second select in ref-03, not under the
+   first, so it takes the second column of its own row. */
+.options-row {
+  grid-column: 2;
+  margin-top: 0;
 }
 
-.form-select:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+@media (max-width: 1180px) {
+  .sealring-bands { grid-template-columns: minmax(0, 1fr); }
 }
 
-@media (max-width: 767px) {
-  .sealring-controls {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 820px) {
+  .controls { grid-template-columns: minmax(0, 1fr); }
+  .options-row { grid-column: 1; }
 }

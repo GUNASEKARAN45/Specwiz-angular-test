@@ -1,76 +1,78 @@
+/**
+ * Sealring section. Layout from ref-03: two selects on the left with the
+ * Options button beneath, and the resolved geometry read-only on the right —
+ * Inner Diameter alone on the first row, Rib Thickness and Outer Diameter
+ * paired on the second.
+ */
 import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { InsMMPipe } from '../../../../shared/pipes/ins-mm.pipe';
-import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
-import { FieldRowComponent } from '../../../../shared/components/field-row/field-row.component';
-import { ReadonlyFieldComponent } from '../../../../shared/components/readonly-field/readonly-field.component';
-import { DualUnitFieldComponent } from '../../../../shared/components/dual-unit-field/dual-unit-field.component';
-import { FormSectionComponent } from '../../../../shared/components/form-section/form-section.component';
-import { SealringType, SealringSize, SealringSpec } from '../../../../core/models/sealring.model';
+import { SealringType, SealringSize } from '../../../../core/models/sealring.model';
+import { formatInches, formatDualUnit } from '../../../../core/util/units.util';
 import { DesignDataStore } from '../../store/design-data.store';
 
 @Component({
   selector: 'sw-sealring-section',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    FormsModule,
-    InsMMPipe,
-    ActionButtonComponent,
-    FieldRowComponent,
-    ReadonlyFieldComponent,
-    DualUnitFieldComponent,
-    FormSectionComponent,
-  ],
+  imports: [CommonModule],
   template: `
-    <sw-form-section title="Sealring">
-      <div class="sealring-controls">
-        <div class="control-column">
-          <sw-field-row id="sealring-type" label="Type">
-            <select
-              class="form-select"
-              [value]="store.sealringTypeId() ?? ''"
-              (change)="onType($event)"
-            >
-              <option value="">Select...</option>
-              @for (t of types; track t.id) {
-                <option ng-reflect-value="{}" [value]="t.id">{{ t.label }}</option>
-              }
-            </select>
-          </sw-field-row>
+    <h2 class="dd-section-title">Sealring</h2>
 
-          <sw-field-row id="sealring-size" label="Size">
-            <select
-              class="form-select"
-              [value]="store.sealringSizeId() ?? ''"
-              [disabled]="store.sealringTypeId() === null"
-              (change)="onSize($event)"
-            >
-              <option value="">Select...</option>
-              @for (s of sizesForType; track s.id) {
-                <option ng-reflect-value="{}" [value]="s.id">{{ s.label }}</option>
-              }
-            </select>
-          </sw-field-row>
-        </div>
+    <div class="sealring-bands">
+      <div class="controls">
+        <select
+          class="dd-select"
+          aria-label="Sealring type"
+          [value]="store.sealringTypeId() ?? ''"
+          (change)="onType($event)"
+        >
+          <option value=""></option>
+          @for (type of types; track type.id) {
+            <option [value]="type.id">{{ type.label }}</option>
+          }
+        </select>
 
-        <div class="outputs-column">
-          <sw-dual-unit-field label="Inner Diameter" [inches]="store.sealringSpec()?.id ?? null" />
-          <sw-readonly-field label="Rib Thickness" [value]="(spec()?.ribThickness | insMm) ?? '0.000 ins'" />
-          <sw-readonly-field label="Outer Diameter" [value]="(spec()?.od | insMm) ?? '0.000 ins'" />
+        <select
+          class="dd-select"
+          aria-label="Sealring size"
+          [disabled]="!store.sealringTypeId()"
+          [value]="store.sealringSizeId() ?? ''"
+          (change)="onSize($event)"
+        >
+          <option value=""></option>
+          @for (size of sizesForType; track size.id) {
+            <option [value]="size.id">{{ size.label }}</option>
+          }
+        </select>
+
+        <div class="dd-actions options-row">
+          <button
+            type="button"
+            class="dd-btn"
+            [disabled]="!store.sealringSectionComplete()"
+            (click)="onOptions()"
+          >Options</button>
         </div>
       </div>
 
-      <div class="section-actions">
-        <sw-action-button
-          label="Options"
-          [disabled]="!store.sealringSectionComplete()"
-          (clicked)="onOptions()"
-        />
+      <div class="dd-pair dd-pair--duo outputs">
+        <span class="dd-label" id="seal-id-label">Inner Diameter</span>
+        <div class="dd-ro" role="status" aria-labelledby="seal-id-label">
+          {{ dual(spec()?.id) }}
+        </div>
+        <span></span>
+        <span></span>
+
+        <span class="dd-label" id="seal-rib-label">Rib Thickness</span>
+        <div class="dd-ro" role="status" aria-labelledby="seal-rib-label">
+          {{ ins(spec()?.ribThickness) }}
+        </div>
+        <span class="dd-label" id="seal-od-label">Outer Diameter</span>
+        <div class="dd-ro" role="status" aria-labelledby="seal-od-label">
+          {{ ins(spec()?.od) }}
+        </div>
       </div>
-    </sw-form-section>
+    </div>
   `,
   styleUrls: ['./sealring-section.component.scss'],
 })
@@ -80,12 +82,15 @@ export class SealringSectionComponent {
   @Input() sizesForType: SealringSize[] = [];
   @Output() optionsRequested = new EventEmitter<void>();
 
+  readonly ins = formatInches;
+  readonly dual = formatDualUnit;
+
   // A getter, not a field: @Input values are assigned AFTER construction,
   // so a field initializer reading `this.store` gets undefined and the
   // whole section throws before it can render.
   get spec() { return this.store.sealringSpec; }
 
-    onType(event: Event): void {
+  onType(event: Event): void {
     const target = event.target as HTMLSelectElement;
     this.store.setSealringType(target.value || null);
   }
