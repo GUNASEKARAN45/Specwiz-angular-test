@@ -118,7 +118,10 @@ export class HubSectionComponent {
     };
   });
 
-  spec = this.store.hubSpec;
+  // A getter, not a field: @Input values are assigned AFTER construction,
+  // so a field initializer reading `this.store` gets undefined and the
+  // whole section throws before it can render.
+  get spec() { return this.store.hubSpec; }
 
   onHubSize(event: Event): void {
     const target = event.target as HTMLSelectElement;

@@ -201,7 +201,10 @@ export class PipeOdSectionComponent {
   @Input() schedules: Schedule[] = [];
   @Output() specBreaksRequested = new EventEmitter<void>();
 
-  resolvedGeom = this.store.resolvedPipeGeometry;
+  // A getter, not a field: @Input values are assigned AFTER construction,
+  // so a field initializer reading `this.store` gets undefined and the
+  // whole section throws before it can render.
+  get resolvedGeom() { return this.store.resolvedPipeGeometry; }
 
   onPipeBasis(basis: PipeBasis): void {
     this.store.setPipeBasis(basis);

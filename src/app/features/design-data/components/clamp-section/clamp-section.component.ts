@@ -67,7 +67,10 @@ export class ClampSectionComponent {
   @Input() clampSizes: ClampSize[] = [];
   @Output() clampSizeChange = new EventEmitter<NominalSizeId | null>();
 
-  spec = this.store.clampSpec;
+  // A getter, not a field: @Input values are assigned AFTER construction,
+  // so a field initializer reading `this.store` gets undefined and the
+  // whole section throws before it can render.
+  get spec() { return this.store.clampSpec; }
 
   onClampSize(event: Event): void {
     const target = event.target as HTMLSelectElement;
