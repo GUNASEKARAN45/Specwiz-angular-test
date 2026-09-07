@@ -1,0 +1,22 @@
+:host { display: block; }
+
+.clamp-bands {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+  gap: 10px 34px;
+  align-items: start;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 260px);
+  gap: 6px;
+}
+
+@media (max-width: 1180px) {
+  .clamp-bands { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 820px) {
+  .controls { grid-template-columns: minmax(0, 1fr); }
+}

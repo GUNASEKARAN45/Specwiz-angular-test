@@ -1,0 +1,104 @@
+<div class="design-data-page">
+  <!-- Four tabs, as ref-01..ref-03. Only Design Data is specified; the other
+       three are placeholders by SPEC.md §1. -->
+  <nav class="tab-bar dd-sheet" role="tablist" aria-label="Piping class designer">
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.active]="currentTab === 'piping-class-data'"
+      [attr.aria-selected]="currentTab === 'piping-class-data'"
+      (click)="currentTab = 'piping-class-data'"
+    >Piping Class Data</button>
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.active]="currentTab === 'design-data'"
+      [attr.aria-selected]="currentTab === 'design-data'"
+      (click)="currentTab = 'design-data'"
+    >Design Data</button>
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.active]="currentTab === 'output-data'"
+      [attr.aria-selected]="currentTab === 'output-data'"
+      (click)="currentTab = 'output-data'"
+    >Output Data</button>
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.active]="currentTab === 'stress-report'"
+      [attr.aria-selected]="currentTab === 'stress-report'"
+      (click)="currentTab = 'stress-report'"
+    >Stress Report</button>
+  </nav>
+
+  <div class="tab-content">
+    @if (currentTab === 'design-data') {
+      <div class="sheet dd-sheet">
+        <h1 class="dd-title">Design Data</h1>
+
+        <sw-pipe-od-section
+          [store]="store"
+          [pipeSizes]="pipeSizes()"
+          [schedules]="schedulesForSelectedSize()"
+          (specBreaksRequested)="onSpecBreaks()"
+        />
+
+        <div class="dd-rule"></div>
+
+        <sw-sealring-section
+          [store]="store"
+          [types]="sealringTypes()"
+          [sizesForType]="sealringSizes()"
+          (optionsRequested)="onSealringOptions()"
+        />
+
+        <div class="dd-rule"></div>
+
+        <sw-clamp-section
+          [store]="store"
+          [clampSizes]="clampSizes()"
+          (clampSizeChange)="onClampSizeChange($event)"
+        />
+
+        <div class="dd-rule"></div>
+
+        <sw-hub-section
+          [store]="store"
+          [hubSizes]="hubSizes()"
+          [duties]="duties()"
+          (optionsRequested)="onHubOptions()"
+        />
+      </div>
+    }
+
+    @if (currentTab === 'piping-class-data') {
+      <div class="sheet dd-sheet placeholder">
+        <h2>Piping Class Data</h2>
+        <p>Coming soon.</p>
+      </div>
+    }
+
+    @if (currentTab === 'output-data') {
+      <div class="sheet dd-sheet placeholder">
+        <h2>Output Data</h2>
+        <p>Coming soon.</p>
+      </div>
+    }
+
+    @if (currentTab === 'stress-report') {
+      <div class="sheet dd-sheet placeholder">
+        <h2>Stress Report</h2>
+        <p>Coming soon.</p>
+      </div>
+    }
+  </div>
+
+  <div class="status-wrapper">
+    <sw-status-chip [errorCount]="store.errorCount()" />
+  </div>
+</div>

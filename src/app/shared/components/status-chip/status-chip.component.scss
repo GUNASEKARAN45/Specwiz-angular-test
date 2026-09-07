@@ -1,0 +1,39 @@
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(136, 150, 171, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  align-self: flex-end;
+
+  &.clean {
+    color: var(--color-success, #16a34a);
+  }
+
+  &.has-error {
+    color: var(--color-error, #dc2626);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+
+    &.green {
+      background: var(--color-success, #16a34a);
+      box-shadow: 0 0 6px 0 rgba(22, 163, 74, 0.6);
+    }
+
+    &.red {
+      background: var(--color-error, #dc2626);
+      box-shadow: 0 0 6px 0 rgba(220, 38, 38, 0.6);
+    }
+  }
+}

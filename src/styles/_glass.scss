@@ -1,0 +1,64 @@
+/**
+ * Liquid-glass mixins.
+ * SPEC.md §4, AC-UI-01
+ */
+
+@mixin glass-surface(
+  $light-bg: rgba(255, 255, 255, 0.55),
+  $light-border: rgba(255, 255, 255, 0.35),
+  $dark-bg: rgba(22, 26, 34, 0.55),
+  $dark-border: rgba(255, 255, 255, 0.2),
+  $fallback-light-bg: rgba(255, 255, 255, 0.85),
+  $fallback-border: rgba(136, 150, 171, 0.3)
+) {
+  background: $light-bg;
+  border: 1px solid $light-border;
+  border-radius: var(--radius-xl, 12px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 52, 0.12);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+
+  /* Reduced transparency */
+  @media (prefers-reduced-transparency: reduce) {
+    background: $fallback-light-bg;
+    border-color: $fallback-border;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
+    @media (prefers-color-scheme: dark) {
+      background: $dark-bg;
+      border-color: $dark-border;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+
+  /* @supports fallback */
+  @supports not (backdrop-filter: blur(18px)) {
+    background: $fallback-light-bg;
+    border-color: $fallback-border;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@mixin glass-panel() {
+  @include glass-surface();
+}
+
+/* Gradient wash background */
+/**
+ * The page behind the glass.
+ *
+ * Light, and deliberately not flat: a blurred sheet over flat white reads as
+ * flat grey, so the wash gives the blur something to refract. The reference
+ * screenshots are a near-white interface, which is what this matches - the
+ * earlier full-saturation purple came from reading "glass" as "dark".
+ */
+@mixin gradient-wash() {
+  background:
+    radial-gradient(1100px 680px at 10% -10%, var(--dd-wash-a, #e8eefc), transparent 60%),
+    radial-gradient(900px 620px at 92% 4%, var(--dd-wash-c, #e6f0f7), transparent 55%),
+    linear-gradient(168deg, var(--dd-page, #f4f6fa), var(--dd-wash-b, #eef0fb));
+  background-attachment: fixed;
+}

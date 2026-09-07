@@ -1,0 +1,33 @@
+:host { display: block; }
+
+.hub-bands {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+  gap: 10px 34px;
+  align-items: start;
+}
+
+.controls {
+  display: grid;
+  gap: 6px;
+}
+
+.hub-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+
+  .dd-select { flex: 1 1 200px; max-width: 260px; }
+}
+
+/* OD-2: a clamp change overrides a hand-picked hub, and says so here. */
+.hub-note {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--dd-ink-soft);
+}
+
+@media (max-width: 1180px) {
+  .hub-bands { grid-template-columns: minmax(0, 1fr); }
+}

@@ -1,0 +1,66 @@
+.hub-detail-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 0 0 0;
+
+  .diagram {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0;
+
+    .hub-diagram {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      color: var(--color-text-secondary, #5a6786);
+    }
+  }
+
+  .hub-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+
+    .field-column {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+
+  .panel-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+  }
+}
+
+.form-select, .form-input {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid rgba(136, 150, 171, 0.3);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(4px);
+  min-height: 36px;
+  width: 100%;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: rgba(234, 236, 240, 0.7);
+  }
+}
+
+.form-select:focus, .form-input:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .hub-fields {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

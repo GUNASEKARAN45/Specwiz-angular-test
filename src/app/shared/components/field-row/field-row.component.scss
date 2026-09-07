@@ -1,0 +1,20 @@
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+
+  .field-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-primary, #1a1a2e);
+    min-width: 100px;
+    white-space: nowrap;
+  }
+
+  .field-unit {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary, #5a6786);
+    margin-left: 0.25rem;
+  }
+}

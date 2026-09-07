@@ -1,0 +1,253 @@
+/**
+ * Global styles — Specwiz Design Data tab.
+ * SPEC.md §4, AC-UI-01
+ *
+ * The control vocabulary lives here rather than in each section, because
+ * component styles are scoped by view encapsulation: a `.dd-select` rule
+ * written inside one section cannot reach another's markup. Global rules reach
+ * every section and keep one definition of what a control looks like.
+ */
+
+@use './_tokens';
+@use './_glass' as glass;
+
+/* Reset and base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica,
+    Arial, sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* AC-RWD-01: the document never scrolls sideways. */
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--dd-ink);
+  font-size: 14px;
+  line-height: 1.45;
+  @include glass.gradient-wash();
+  overflow-x: hidden;
+}
+
+:focus-visible {
+  outline: 2px solid var(--dd-btn-a);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ sheet */
+
+.dd-sheet {
+  @include glass.glass-surface(
+    $light-bg: var(--dd-sheet),
+    $light-border: var(--dd-sheet-edge)
+  );
+  border-radius: 14px;
+  box-shadow: var(--dd-sheet-shadow);
+}
+
+/* ------------------------------------------------------------------- text */
+
+.dd-title {
+  margin: 0 0 18px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--dd-brand);
+  text-transform: uppercase;
+}
+
+.dd-section-title {
+  margin: 0 0 14px;
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--dd-ink);
+}
+
+.dd-label {
+  color: var(--dd-ink-soft);
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.dd-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------- controls */
+
+.dd-select,
+.dd-input {
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  min-height: 38px;
+  padding: 0 10px;
+  font: inherit;
+  color: var(--dd-ink);
+  background: var(--dd-field);
+  border: 1px solid var(--dd-field-edge);
+  border-radius: var(--dd-radius);
+}
+
+.dd-select { padding-right: 26px; }
+
+/* G-DD-04: a control an interlock switches off stays on screen and goes flat
+   grey, exactly as ref-01 and ref-02 show it. It is never removed. */
+.dd-select:disabled,
+.dd-input:disabled {
+  background: var(--dd-field-flat);
+  border-color: transparent;
+  color: var(--dd-ink-faint);
+  cursor: not-allowed;
+}
+
+.dd-ro {
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: var(--dd-radius);
+  background: var(--dd-field-flat);
+  color: var(--dd-ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.dd-radio,
+.dd-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;              /* AC-RWD-01 touch target */
+  color: var(--dd-ink);
+  cursor: pointer;
+}
+
+.dd-check { font-size: 13px; }
+
+.dd-radio input,
+.dd-check input {
+  width: 16px;
+  height: 16px;
+  min-height: 16px;
+  margin: 0;
+  accent-color: var(--dd-brand-tab);
+}
+
+.dd-radio:has(input:disabled) {
+  color: var(--dd-ink-faint);
+  cursor: not-allowed;
+}
+
+/* Fieldsets group the radios for assistive tech (G-DD-09) but must not draw a
+   box or break the grid, so they lay their children out as if absent. */
+.dd-fieldset {
+  display: contents;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+/* The blue pill, with the halo under every button in ref-03. */
+.dd-btn {
+  min-height: 40px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: var(--dd-radius-pill);
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(180deg, var(--dd-btn-a), var(--dd-btn-b));
+  box-shadow: 0 6px 16px rgba(47, 124, 246, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.dd-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(47, 124, 246, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+/* G-DD-05: a button whose inputs are absent is not clickable. */
+.dd-btn:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dd-btn { transition: none; }
+  .dd-btn:hover:not(:disabled) { transform: none; }
+}
+
+/* ----------------------------------------------------------------- layout */
+
+/* A section's three bands: pipe controls, dimension controls, outputs.
+   Three grids rather than one six-column grid, so each radio group stays a
+   single contiguous fieldset. Equal row heights keep the bands aligned. */
+.dd-bands {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.85fr) minmax(250px, 1fr) minmax(250px, 1fr);
+  gap: 8px 34px;
+  align-items: start;
+}
+
+.dd-pair {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 10px 14px;
+  grid-auto-rows: minmax(var(--dd-row), auto);
+  align-items: center;
+  min-width: 0;
+}
+
+/* Sealring, clamp and hub read their outputs two pairs to a row. */
+.dd-pair--duo {
+  grid-template-columns: max-content minmax(0, 1fr) max-content minmax(0, 1fr);
+}
+
+.dd-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+/* The dotted separators between sections in ref-03. */
+.dd-rule {
+  height: 0;
+  margin: 22px 0;
+  border-top: 2px dotted var(--dd-rule);
+}
+
+@media (max-width: 1180px) {
+  .dd-bands { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+
+@media (max-width: 820px) {
+  .dd-bands { grid-template-columns: minmax(0, 1fr); }
+  .dd-pair,
+  .dd-pair--duo { grid-template-columns: minmax(0, 1fr); }
+  .dd-pair > .dd-label { padding-top: 6px; }
+}

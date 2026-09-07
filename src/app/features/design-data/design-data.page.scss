@@ -1,0 +1,79 @@
+:host {
+  display: block;
+}
+
+.design-data-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: clamp(12px, 2.2vw, 26px);
+}
+
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  margin-bottom: 18px;
+  /* AC-RWD-01: the bar scrolls inside itself at narrow widths rather than
+     widening the page. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+
+  .tab {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--dd-ink-soft);
+    font: inherit;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+
+    &:hover:not(.active) {
+      background: rgba(26, 115, 232, 0.08);
+    }
+
+    /* Bound only — never a hard-coded class, or the bar reports a selection
+       that is not the one showing. */
+    &.active {
+      background: rgba(26, 115, 232, 0.14);
+      color: var(--dd-brand-tab);
+      font-weight: 650;
+    }
+  }
+}
+
+.tab-content {
+  flex: 1;
+}
+
+.sheet {
+  padding: clamp(16px, 2.4vw, 28px);
+}
+
+.placeholder {
+  padding: 48px 24px;
+  text-align: center;
+
+  h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--dd-ink);
+  }
+
+  p {
+    margin: 0;
+    color: var(--dd-ink-faint);
+  }
+}
+
+.status-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
